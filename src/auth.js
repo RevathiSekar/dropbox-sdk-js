@@ -15,6 +15,14 @@ if (typeof window !== 'undefined') {
   crypto = require('crypto'); // eslint-disable-line global-require
 }
 
+let Encoder;
+try {
+  const util = require('util'); // eslint-disable-line global-require
+  Encoder = util.TextEncoder;
+} catch (Exception) {
+  Encoder = TextEncoder;
+}
+
 // Expiration is 300 seconds but needs to be in milliseconds for Date object
 const TokenExpirationBuffer = 300 * 1000;
 const PKCELength = 128;
@@ -143,7 +151,7 @@ export default class DropboxAuth {
       .substr(0, 128);
     this.codeVerifier = codeVerifier;
 
-    const encoder = new TextEncoder();
+    const encoder = new Encoder();
     const codeData = encoder.encode(codeVerifier);
     let codeChallenge = crypto.createHash('sha256').update(codeData).digest();
     codeChallenge = codeChallenge.toString('base64')
